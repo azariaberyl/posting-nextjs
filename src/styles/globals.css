@@ -2,9 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.content {
-  width: 1200px;
-}
 
 :root {
   @apply antialiased
