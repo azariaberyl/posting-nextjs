@@ -6,9 +6,10 @@ interface PostCard {
 
 interface Post {
   id: string;
+  author?: string;
   title: string;
   createdAt: number;
-  description: string;
+  description?: string;
 }
 
 export type { PostCard, Post };
