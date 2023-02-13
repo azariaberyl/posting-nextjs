@@ -1,16 +1,19 @@
 import Loading from '@/components/Loading';
 import { LoadingProvider } from '@/contexts/Loading';
-import { UserPostsProvider } from '@/contexts/UserPosts';
-import { getUsernameCookie, removeUserCookie, removeUsernameCookie, setUserCookie, setUsernameCookie } from '@/libs';
-import { auth } from '@/libs/firebase';
+import { removeUserCookie, setUserCookie } from '@/libs';
+import { auth, db } from '@/libs/firebase';
 import '@/styles/globals.css';
+import { Post } from '@/types';
 import { onAuthStateChanged, updateProfile } from 'firebase/auth';
+import { onValue, ref } from 'firebase/database';
 import type { AppProps } from 'next/app';
+import { Router } from 'next/router';
 import React, { useEffect, useState, useMemo } from 'react';
 
 export default function App({ Component, pageProps }: AppProps) {
   const [loadingComponent, setLoadingComponent] = useState(true);
   const [loading, setLoading] = useState(true);
+  const [posts, setPosts] = useState<Post[] | null>(null);
 
   const loadingVal = useMemo(
     () => ({
@@ -20,26 +23,18 @@ export default function App({ Component, pageProps }: AppProps) {
     [loading]
   );
 
-  const userPostsValue = useMemo(() => [], []);
-
   useEffect(() => {
-    const username = getUsernameCookie();
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setLoading(true);
+
       if (user) {
-        if (username && auth.currentUser) updateProfile(auth.currentUser, { displayName: username });
+        //Login
         setUserCookie({ id: user.uid, username: user.displayName });
-        // User is signed in, see docs for a list of available properties
-        // https://firebase.google.com/docs/reference/js/firebase.User
-        const uid = user.uid;
-        // ...
       } else {
-        removeUserCookie();
         // User is signed out
-        // ...
-        removeUsernameCookie();
+        removeUserCookie();
       }
-      // console.log(auth.currentUser);
+
       setLoading(false);
     });
 
@@ -48,18 +43,24 @@ export default function App({ Component, pageProps }: AppProps) {
   }, []);
 
   useEffect(() => {
-    return () => {};
-  }, [auth.currentUser?.email]);
+    if (auth.currentUser) {
+      const unsubs = onValue(ref(db, `users/${auth.currentUser?.displayName}`), (snapshot) => {
+        setLoading(true);
+        const data = (snapshot.val() as Post[]) || [];
+        setPosts(Object.values(data));
+        setLoading(false);
+      });
+      return () => unsubs();
+    }
+  }, [auth.currentUser]);
 
   if (loadingComponent) return <Loading />;
 
   return (
     <LoadingProvider value={loadingVal}>
-      <UserPostsProvider value={[]}>
-        <div className='overflow-auto'>
-          <Component posts={{ test: 'test' }} {...pageProps} />
-        </div>
-      </UserPostsProvider>
+      <div className='overflow-auto'>
+        <Component posts={posts} {...pageProps} />
+      </div>
     </LoadingProvider>
   );
 }

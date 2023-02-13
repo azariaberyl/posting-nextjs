@@ -11,32 +11,33 @@ import { child, get, onValue, ref } from 'firebase/database';
 import { Post } from '@/types';
 import { GetServerSideProps } from 'next';
 import Toast from '@/components/Toast';
+import { HomeProps } from '@/types/pages';
 
-export const getServerSideProps: GetServerSideProps = async ({ req }) => {
-  const username = JSON.parse(req.cookies._UserAccess || '{"username": "user"}').username;
-  if (username !== 'user') {
-    try {
-      const data = await get(child(ref(db), `users/${username}`));
-      if (data.exists()) {
-        return {
-          props: { data: Object.values(data.val()), username },
-        };
-      } else {
-        console.log('No data available');
-        return { props: { data: [], username } };
-      }
-    } catch (e) {
-      console.log(e);
-      return { props: { data: null, username: username } };
-    }
-  }
-  return { props: { data: null, username: '' } };
-};
+// export const getServerSideProps: GetServerSideProps = async ({ req }) => {
+//   const username = JSON.parse(req.cookies._UserAccess || '{"username": "user"}').username;
+//   if (username !== 'user') {
+//     try {
+//       const data = await get(child(ref(db), `users/${username}`));
+//       if (data.exists()) {
+//         return {
+//           props: { data: Object.values(data.val()), username },
+//         };
+//       } else {
+//         console.log('No data available');
+//         return { props: { data: [], username } };
+//       }
+//     } catch (e) {
+//       console.log(e);
+//       return { props: { data: null, username: username } };
+//     }
+//   }
+//   return { props: { data: null, username: '' } };
+// };
 
-export default function Home({ data, username, posts }: any) {
-  const { loading } = useContext(LoadingContext);
+export default function Home({ posts }: HomeProps) {
+  // const { loading } = useContext(LoadingContext);
 
-  const [post, setPost] = useState<Post[] | null>(data);
+  const [post, setPost] = useState<Post[] | null>(posts);
   const [toastMessage, setToastMessage] = useState('');
   const timeoutId = useRef<NodeJS.Timeout>();
 
@@ -62,7 +63,7 @@ export default function Home({ data, username, posts }: any) {
 
   const Dashboard = () => (
     <>
-      <Navigation name={username} />
+      <Navigation />
       <main className='xl:w-[1200px] mx-auto mt-10 p-5'>
         <div className='flex justify-between items-center'>
           <h1 className='text-3xl font-bold'>My Posts {post?.length}</h1>
@@ -90,14 +91,16 @@ export default function Home({ data, username, posts }: any) {
   );
 
   useEffect(() => {
-    if (auth.currentUser) {
-      const unsubs = onValue(ref(db, `users/${auth.currentUser?.displayName}`), (snapshot) => {
-        const data = snapshot.val() || {};
-        setPost(Object.values(data));
-      });
-      return () => unsubs();
-    }
-  }, [loading]);
+    // if (auth.currentUser) {
+    //   const unsubs = onValue(ref(db, `users/${auth.currentUser?.displayName}`), (snapshot) => {
+    //     const data = snapshot.val() || {};
+    //     setPost(Object.values(data));
+    //   });
+    //   return () => unsubs();
+    // }
+    // }, [loading, posts]);
+    setPost(posts);
+  }, [posts]);
 
   return (
     <>

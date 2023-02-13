@@ -7,17 +7,6 @@ import React, { useEffect, useContext } from 'react';
 
 function Custom404() {
   const router = useRouter();
-  const { loadingComponent } = useContext(LoadingContext);
-
-  // useEffect(() => {
-  //   if (!loadingComponent) {
-  //     if (auth.currentUser) {
-  //       router.replace('/');
-  //     } else {
-  //       router.replace('/auth/login');
-  //     }
-  //   }
-  // }, [loadingComponent]);
 
   return (
     <div className='flex flex-col gap-3 h-screen justify-center items-center'>

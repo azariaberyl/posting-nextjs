@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { initializeApp } from 'firebase/app';
-import { getDatabase, push, ref, remove, set } from 'firebase/database';
+import { getDatabase, push, ref, remove, set, update } from 'firebase/database';
 import { Post } from '@/types';
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -37,8 +37,6 @@ export function writePost(post: any) {
   set(refPost, true);
 }
 
-export function getPost(id: string) {}
-
 export function delPost(id: string) {
   const user = auth.currentUser?.email;
 
@@ -47,6 +45,20 @@ export function delPost(id: string) {
 
   remove(refPost);
   remove(refUser);
+}
+
+export function createUserData(email: string, username: string, password: string) {
+  console.log(password);
+  const refUser = ref(db, `userData/${username}`);
+
+  set(refUser, { username, email, password });
+}
+
+export function updatePost(post: Post) {
+  const updates: any = {};
+  updates[`/users/${post.author}/${post.id}`] = post;
+
+  return update(ref(db), updates);
 }
 
 export default app;

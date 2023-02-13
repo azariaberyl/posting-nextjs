@@ -37,7 +37,10 @@ function Card({ createdAt, id, title, onCopy }: Card) {
           <Button onClick={() => onCopy(id)} className='bg-blue-500 hover:bg-blue-600 text-white'>
             Copy
           </Button>
-          <Link className='px-2 py-1 rounded-md font-medium bg-gray-500 hover:bg-gray-600 text-white' href='/edit'>
+          <Link
+            className='px-2 py-1 rounded-md font-medium bg-gray-500 hover:bg-gray-600 text-white'
+            href={`/edit/${id}`}
+          >
             Edit
           </Link>
           <Button onClick={onDelete} className='bg-red-500 hover:bg-red-600 text-white'>

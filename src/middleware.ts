@@ -6,11 +6,10 @@ import type { NextRequest } from 'next/server';
 export function middleware(request: NextRequest) {
   const userCookie = request.cookies.get('_UserAccess') || '';
   const url = request.nextUrl.clone();
-  const pathArray = url.pathname.split('/');
 
   if (userCookie) {
     // If there is login user, it will redirect to dashboard
-    if (url.pathname === '/auth/login' || url.pathname === '/auth/login') {
+    if (url.pathname === '/auth/login' || url.pathname === '/auth/register') {
       console.log('cookie');
       url.pathname = '/';
       return NextResponse.redirect(url);
@@ -26,7 +25,7 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  console.log('nothing', url.pathname, userCookie);
+  console.log('nothing', url.pathname);
 }
 
 export const config = {

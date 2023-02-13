@@ -12,4 +12,9 @@ interface Post {
   description?: string;
 }
 
-export type { PostCard, Post };
+interface UserData {
+  username: string;
+  email: string;
+}
+
+export type { PostCard, Post, UserData };

@@ -1,12 +1,25 @@
-import { setUsernameCookie } from '@/libs';
-import { auth } from '@/libs/firebase';
-import { createUserWithEmailAndPassword, updateCurrentUser } from 'firebase/auth';
+import { auth, createUserData, db } from '@/libs/firebase';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { child, get, ref } from 'firebase/database';
+import { GetStaticProps } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { FormEvent, useRef, useState } from 'react';
 
-function register() {
+export const getStaticProps: GetStaticProps = async () => {
+  const usernames: string[] = Object.keys((await get(child(ref(db), 'userData'))).val());
+
+  return {
+    props: { usernames },
+  };
+};
+
+interface register {
+  usernames: string[];
+}
+
+function register({ usernames }: register) {
   const router = useRouter();
 
   const email = useRef<HTMLInputElement>(null);
@@ -16,12 +29,19 @@ function register() {
   const [error, setError] = useState<string>('');
   const ErrorComp = () => <p className='bg-red-400 rounded p-2 font-medium text-white'>{error}</p>;
 
-  const handleRegister = (email: string, password: string, username: string, onSucces?: () => {}) => {
+  const handleRegister = (email: string, password: string, username: string, onSucces?: () => void) => {
+    const isUsername = usernames.some((val) => username === val);
+    if (isUsername) {
+      setError('Username already exists');
+      return;
+    }
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
         if (onSucces) onSucces();
-        setUsernameCookie(username);
+        const user = userCredential.user;
+        updateProfile(user, { displayName: username });
+        createUserData(email, username, password);
       })
       .catch((error) => {
         setError(error.message);
@@ -35,7 +55,7 @@ function register() {
     const usernameVal = username.current?.value;
     const passwordVal = password.current?.value;
     if (emailVal && passwordVal && usernameVal) {
-      handleRegister(emailVal, passwordVal, usernameVal, () => router.push('/'));
+      handleRegister(emailVal, passwordVal, usernameVal, () => router.reload());
     }
     return;
   };
@@ -103,9 +123,9 @@ function register() {
 
           <div className='flex justify-center mb-5 mt-12'>
             <p className='text-gray-500'>
-              Don't have account yet?{' '}
+              Already have an account?{' '}
               <Link className='font-semibold text-blue-700' href='/auth/login'>
-                Sign Up
+                Sign in
               </Link>
             </p>
           </div>

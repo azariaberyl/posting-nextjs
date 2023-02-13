@@ -6,9 +6,9 @@ import { useRouter } from 'next/router';
 import React, { useCallback, useState, useEffect, useContext } from 'react';
 import { MdPerson } from 'react-icons/md';
 
-function Navigation({ name }: any) {
+function Navigation() {
   const router = useRouter();
-  const [username, setUsername] = useState(name);
+  const [username, setUsername] = useState(auth.currentUser?.displayName || '');
   const { loading } = useContext(LoadingContext);
 
   const onLogout = useCallback(() => {
@@ -17,7 +17,7 @@ function Navigation({ name }: any) {
   }, []);
 
   useEffect(() => {
-    setUsername(auth.currentUser?.displayName || name);
+    setUsername(auth.currentUser?.displayName || '');
   }, [loading]);
 
   return (

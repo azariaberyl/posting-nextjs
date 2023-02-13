@@ -12,15 +12,15 @@ export function removeUserCookie() {
   Cookies.remove('_UserAccess');
 }
 
-export function setUsernameCookie(val: string) {
-  Cookies.set('_Username', val);
-}
-export function getUsernameCookie() {
-  return Cookies.get('_Username');
-}
-export function removeUsernameCookie() {
-  Cookies.remove('_Username');
-}
+// export function setUsernameCookie(val: string) {
+//   Cookies.set('_Username', val);
+// }
+// export function getUsernameCookie() {
+//   return Cookies.get('_Username');
+// }
+// export function removeUsernameCookie() {
+//   Cookies.remove('_Username');
+// }
 
 export function jsonComparator(json1: Record<string, any>, json2: Record<string, any>) {
   if (Object.keys(json1).length !== Object.keys(json2).length) {
