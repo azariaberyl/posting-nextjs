@@ -29,6 +29,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
 function UserPost({ message }: any) {
   const { title, createdAt, description, author } = message;
+  console.log(description);
   return (
     <>
       <Head>
@@ -39,7 +40,7 @@ function UserPost({ message }: any) {
         <p className='text-gray-400 text-sm my-1'>
           {new Date(createdAt).toLocaleString()} by {author}
         </p>
-        <p className='text-lg mx-1 mt-3'>{description}</p>
+        <div className='text-lg' dangerouslySetInnerHTML={{ __html: description }}></div>
       </main>
     </>
   );

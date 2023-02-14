@@ -8,7 +8,7 @@ import { useRouter } from 'next/router';
 import React, { FormEvent, useRef, useState } from 'react';
 
 export const getStaticProps: GetStaticProps = async () => {
-  const usernames: string[] = Object.keys((await get(child(ref(db), 'userData'))).val());
+  const usernames: string[] = Object.keys((await get(child(ref(db), 'userData'))).val() || {});
 
   return {
     props: { usernames },
@@ -38,10 +38,10 @@ function register({ usernames }: register) {
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
-        if (onSucces) onSucces();
         const user = userCredential.user;
         updateProfile(user, { displayName: username });
         createUserData(email, username, password);
+        if (onSucces) onSucces();
       })
       .catch((error) => {
         setError(error.message);
