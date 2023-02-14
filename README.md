@@ -1,5 +1,3 @@
-    This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
-    This app will help you create and publish a post using a static site generator.
 
 ### Tech Stack
  - [x] React
