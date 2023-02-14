@@ -2,40 +2,21 @@ import Card from '@/components/Card';
 import Navigation from '@/components/Navigation';
 import Head from 'next/head';
 import Link from 'next/link';
-import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
-import React, { useContext, useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { auth, db } from '@/libs/firebase';
-import LoadingContext from '@/contexts/Loading';
 import Empty from '@/components/Empty';
-import { child, get, onValue, ref } from 'firebase/database';
 import { Post } from '@/types';
-import { GetServerSideProps } from 'next';
 import Toast from '@/components/Toast';
 import { HomeProps } from '@/types/pages';
-
-// export const getServerSideProps: GetServerSideProps = async ({ req }) => {
-//   const username = JSON.parse(req.cookies._UserAccess || '{"username": "user"}').username;
-//   if (username !== 'user') {
-//     try {
-//       const data = await get(child(ref(db), `users/${username}`));
-//       if (data.exists()) {
-//         return {
-//           props: { data: Object.values(data.val()), username },
-//         };
-//       } else {
-//         console.log('No data available');
-//         return { props: { data: [], username } };
-//       }
-//     } catch (e) {
-//       console.log(e);
-//       return { props: { data: null, username: username } };
-//     }
-//   }
-//   return { props: { data: null, username: '' } };
-// };
+import { getUserCookie } from '@/libs';
+import { useRouter } from 'next/router';
 
 export default function Home({ posts }: HomeProps) {
-  // const { loading } = useContext(LoadingContext);
+  if (!getUserCookie()) {
+    const router = useRouter();
+    router.reload();
+    return;
+  }
 
   const [post, setPost] = useState<Post[] | null>(posts);
   const [toastMessage, setToastMessage] = useState('');
@@ -91,14 +72,6 @@ export default function Home({ posts }: HomeProps) {
   );
 
   useEffect(() => {
-    // if (auth.currentUser) {
-    //   const unsubs = onValue(ref(db, `users/${auth.currentUser?.displayName}`), (snapshot) => {
-    //     const data = snapshot.val() || {};
-    //     setPost(Object.values(data));
-    //   });
-    //   return () => unsubs();
-    // }
-    // }, [loading, posts]);
     setPost(posts);
   }, [posts]);
 

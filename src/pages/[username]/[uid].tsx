@@ -1,24 +1,10 @@
 import { db } from '@/libs/firebase';
 import { child, get, ref } from 'firebase/database';
-import { GetStaticProps } from 'next';
+import { GetServerSideProps, GetStaticProps } from 'next';
 import Head from 'next/head';
 import React from 'react';
 
-export async function getStaticPaths() {
-  const paths: any[] = [];
-  await get(child(ref(db), `posts`)).then((snapshot) => {
-    const value = snapshot.val();
-    const path = Object.keys(value).forEach((key) => {
-      Object.keys(value[key]).forEach((id) => paths.push({ params: { username: key, uid: id } }));
-    });
-  });
-  return {
-    paths,
-    fallback: false, // can also be true or 'blocking'
-  };
-}
-
-export const getStaticProps: GetStaticProps = async ({ params }) => {
+export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   const username = params?.username;
   const uid = params?.uid;
   const data = await (await get(child(ref(db), `users/${username}/${uid}`))).val();

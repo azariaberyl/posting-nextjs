@@ -14,7 +14,7 @@ function Login() {
   const [error, setError] = useState<string>('');
   const ErrorComp = () => <p className='bg-red-400 rounded p-2 font-medium text-white w-fit'>{error}</p>;
 
-  const handleLogin = useCallback((email: string, password: string, onSucces?: () => {}) => {
+  const handleLogin = useCallback((email: string, password: string, onSucces?: () => void) => {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
@@ -32,7 +32,7 @@ function Login() {
     const passwordVal = password.current?.value;
     setError('');
     if (emailVal && passwordVal) {
-      handleLogin(emailVal, passwordVal, () => router.push('/'));
+      handleLogin(emailVal, passwordVal, () => router.reload());
       return;
     }
   }, []);

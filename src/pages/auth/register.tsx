@@ -5,23 +5,12 @@ import { GetStaticProps } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import React, { FormEvent, useRef, useState } from 'react';
+import React, { FormEvent, useRef, useState, useEffect } from 'react';
 
-export const getStaticProps: GetStaticProps = async () => {
-  const usernames: string[] = Object.keys((await get(child(ref(db), 'userData'))).val() || {});
-
-  return {
-    props: { usernames },
-  };
-};
-
-interface register {
-  usernames: string[];
-}
-
-function register({ usernames }: register) {
+function register() {
   const router = useRouter();
 
+  const [usernames, setUsernames] = useState<string[]>([]);
   const email = useRef<HTMLInputElement>(null);
   const password = useRef<HTMLInputElement>(null);
   const username = useRef<HTMLInputElement>(null);
@@ -59,6 +48,11 @@ function register({ usernames }: register) {
     }
     return;
   };
+
+  useEffect(() => {
+    const getUsernames = async () => setUsernames(Object.keys((await get(child(ref(db), 'userData'))).val() || {}));
+    getUsernames();
+  }, []);
 
   return (
     <>
